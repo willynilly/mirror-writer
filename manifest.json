@@ -10,7 +10,8 @@
     "default_popup": "popup.html"
   },
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "tabs"
   ],
   "options_ui": {
     "page": "options.html",
@@ -20,7 +21,8 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["jquery.js", "webcam.js"]
+      "js": ["jquery.js", "webcam.js"],
+      "all_frames": true
     }
   ]
 }

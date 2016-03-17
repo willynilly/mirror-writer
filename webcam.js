@@ -1,3 +1,5 @@
+var mirrorWriterMediaStream = null;
+
 function setStatus(statusText) {
   document.getElementById('status').textContent = statusText;
 }
@@ -10,14 +12,13 @@ function startWebcamVideo() {
   var video = document.getElementById('webcam-video');
   var canvas = document.getElementById('webcam-canvas');
   var ctx = canvas.getContext('2d');
-  var localMediaStream = null;
 
   function errorCallback() {
     setStatus('Some error.');
   }
 
   function snapshot() {
-    if (localMediaStream) {
+    if (mirrorWriterMediaStream) {
       ctx.drawImage(video, 0, 0);
       // "image/webp" works in Chrome.
       // Other browsers will fall back to image/png.
@@ -25,21 +26,31 @@ function startWebcamVideo() {
     }
   }
 
-  video.addEventListener('click', snapshot, false);
+  //video.addEventListener('click', snapshot, false);
 
   navigator.getUserMedia({video: true}, function(stream) {
     video.src = window.URL.createObjectURL(stream);
-    localMediaStream = stream;
+    mirrorWriterMediaStream = stream;
   }, errorCallback);
+}
+
+function stopWebcamVideo() {
+  stopStream(mirrorWriterMediaStream);
+}
+
+function stopStream(stream) {
+  stream.getVideoTracks().forEach(function (track) {
+    track.stop();
+  });
 }
 
 function addSidebar() {
   var sidebar;
- $('body').css({
+  $('body').css({
    'padding-right': '350px'
- });
- sidebar = $("<div id='mirror-author-sidebar'></div>");
- sidebar.css({
+  });
+  sidebar = $("<div id='mirror-author-sidebar'></div>");
+  sidebar.css({
    'position': 'fixed',
    'right': '0px',
    'top': '0px',
@@ -47,8 +58,8 @@ function addSidebar() {
    'width': '290px',
    'height': '100%',
    'background-color': 'black'  // Confirm it shows up
- });
- $('body').append(sidebar);
+  });
+  $('body').append(sidebar);
 }
 
 function addWebcamToSidebar() {
@@ -61,8 +72,38 @@ function addWebcamToSidebar() {
   $('#webcam-video').css({
     'max-width': '290px',
   });
+
+  $('#mirror-author-sidebar').click(function() {
+    closeWebcamSidebar();
+  });
 }
 
-//addSidebar();
-//addWebcamToSidebar();
-// startWebcamVideo();
+function openWebcamSidebar() {
+  if ($('#mirror-author-sidebar').length) {
+    closeWebcamSidebar();
+  } else {
+    addSidebar();
+    addWebcamToSidebar();
+    startWebcamVideo();
+  }
+}
+
+function closeWebcamSidebar() {
+  stopWebcamVideo();
+  removeSidebar();
+}
+function removeSidebar() {
+  $('#mirror-author-sidebar').remove();
+}
+
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        switch(request.message) {
+          case 'openWebcamSidebar':
+            openWebcamSidebar();
+            sendResponse({message: "success"});
+            break;
+          default:
+            break;
+        }
+});

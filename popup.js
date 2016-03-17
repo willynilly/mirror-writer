@@ -34,5 +34,13 @@ function getWebcamVideo() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  getWebcamVideo();
+
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+       chrome.tabs.sendMessage(tabs[0].id, {message: "openWebcamSidebar"}, function(response) {
+         //console.log(response.message);
+         window.close();
+       });
+  });
+
+  //getWebcamVideo();
 });
