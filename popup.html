@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Mirror Writer</title>
+    <style>
+      body {
+        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+        font-size: 100%;
+      }
+      #status {
+        white-space: pre;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 400px;
+      }
+      #webcam-video {
+        max-width: 100px;
+      }
+      #webcam-image {
+        max-width: 100px;
+      }
+    </style>
+    <script src="popup.js"></script>
+  </head>
+  <body>
+    <div id="status"></div>
+    <video id="webcam-video" autoplay></video>
+    <img id="webcam-image" src="">
+    <canvas id="webcam-canvas" style="display:none;"></canvas>
+  </body>
+</html>
