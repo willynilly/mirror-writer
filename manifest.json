@@ -16,5 +16,11 @@
     "page": "options.html",
     "chrome_style": true,
     "open_in_tab": true
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["jquery.js", "webcam.js"]
+    }
+  ]
 }
